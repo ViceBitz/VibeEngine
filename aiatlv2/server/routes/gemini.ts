@@ -70,7 +70,7 @@ router.post("/create-feature-map", authenticateToken, async (req: AuthRequest, r
     )
 
     //Fetch entire GitHub repository
-    const repo: string = await fetchAllFilesFromRepo({ owner: githubUser, repo: repoName });
+    const repo: string = await fetchAllFilesFromRepo({ owner: githubUser, repo: repoName, token: token });
 
     //Get feature generation markdown and functions, inputted with repository code
     const { markdown, json } = await getPrompts("feature");
