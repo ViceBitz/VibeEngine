@@ -4,6 +4,9 @@ import { Octokit } from '@octokit/rest';
 import { User } from '../models/User.js';
 import { authenticateToken } from '../middleware/auth.js';
 import type { AuthRequest } from '../middleware/auth.js';
+import type { Feature } from '../models/Feature.js';
+
+import { getPrompts } from '../utils/prompts.js'
 
 const router = Router();
 // router.use(authenticateToken);
@@ -144,6 +147,34 @@ router.post("/generate", async (req: AuthRequest, res) => {
     res.status(500).json({ error: "Failed to generate content" });
   }
 });
+
+// Generate feature map from disconnected features with Gemini
+async function makeFeatureMap(features: typeof Feature[]) : Promise<any> {
+  const { markdown, json } = await getPrompts("feature");
+
+  // Generate content using Gemini
+  const response = await ai.models.generateContent({
+    model: "gemini-2.5-flash",
+    contents: markdown,
+    config: {
+      tools: [{
+        //@ts-ignore
+        functionDeclarations: json
+      }],
+    },    
+  });
+  
+
+  // The response object may vary depending on Gemini client version
+  // Typically output text is in response.output_text
+  if (response.functionCalls && response.functionCalls.length > 0) {
+    const functionCall = response.functionCalls[0]; // Assuming one function call
+    return { functionName: functionCall.name, result: functionCall.args }
+  } else {
+    console.log(response.text)
+    return null;
+  }
+}
 
 export default router;
 
