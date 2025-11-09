@@ -94,7 +94,7 @@ router.post("/create-feature-map", authenticateToken, async (req: AuthRequest, r
     if (response.functionCalls && response.functionCalls.length > 0) {
       //Process all returned functions for adding/updating features
       response.functionCalls.forEach((func) => {
-        const funcArgs = (func.args as { properties?: Record<string, unknown> })?.properties;
+        const funcArgs = func.args as Record<string, unknown>
         if (!funcArgs) return;
 
         const featureName = typeof funcArgs.name === 'string' ? funcArgs.name : undefined;
@@ -235,7 +235,7 @@ router.post("/generate-feature", authenticateToken, async (req: AuthRequest, res
     if (response.functionCalls && response.functionCalls.length > 0) {
       response.functionCalls.forEach((func) => {
         const funcName = func.name;
-        const funcArgs = (func.args as { properties?: Record<string, unknown> })?.properties;
+        const funcArgs = (func.args as Record<string, unknown>);
         if (!funcArgs) return;
         // Add file to github repository
         if (funcName === "update_file") {
