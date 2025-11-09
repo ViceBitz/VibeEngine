@@ -2,7 +2,8 @@ import { Router } from 'express';
 import { Octokit } from '@octokit/rest';
 import { User } from '../models/User.js';
 import { Project } from '../models/Project.js';
-import { authenticateToken, AuthRequest } from '../middleware/auth.js';
+import { authenticateToken } from '../middleware/auth.js';
+import type { AuthRequest } from '../middleware/auth.js';
 
 const router = Router();
 router.use(authenticateToken);
