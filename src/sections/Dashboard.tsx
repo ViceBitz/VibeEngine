@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import UserMenu from "@/components/UserMenu";
+// import UserMenu from "@/components/UserMenu";
 import ConnectGitHub from "@/components/ConnectGithub";
 import FeatureMapVisualization from "@/components/FeatureMapVisualization";
 import ChatInterface from "@/components/ChatInterface";

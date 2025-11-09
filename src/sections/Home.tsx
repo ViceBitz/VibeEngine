@@ -14,12 +14,11 @@ const navigation = [
 ]
 
 const Home = () => {
-    const [loginOpen, setLoginOpen] = useState(false);
 
     return (
         <div>
-            <Navbar navigation={navigation} onOpenLogin={() => setLoginOpen(true)} />
-            <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
+            <Navbar navigation={navigation} onOpenLogin={() => {}} />
+            <LoginModal open={false} onClose={() => {}} />
 
             <div className="relative isolate px-6 pt-14 lg:px-8 flex justify-center">
                 <div className="max-w-2xl py-32 sm:py-48 lg:py-56 *text-center">
@@ -35,7 +34,7 @@ const Home = () => {
                             <div className="flex items-center gap-x-6">
                                 <Button
                                     className="bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold px-5 py-2.5"
-                                    onClick={() => setLoginOpen(true)}
+                                    onClick={() => {}}
                                 >
                                     Get started
                                 </Button>

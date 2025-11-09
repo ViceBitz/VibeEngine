@@ -6,8 +6,8 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Dashboard from "./sections/Dashboard";
 import App from "./App";
 import RequireAuth from "./components/RequireAuth";
-import Onboarding from "./pages/Onboarding";
-import GithubCallback from "./pages/GithubCallback";
+// import Onboarding from "./pages/Onboarding";
+// import GithubCallback from "./pages/GithubCallback";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
