@@ -251,8 +251,7 @@ export default function Navbar({ navigation }: { navigation: NavItem[] }) {
                         onHomePage ? (
                             // Logged in AND on home page → only show Dashboard button
                             <Button
-                                variant="ghost"
-                                className="text-sm font-semibold text-white hover:bg-white/10 hover:text-white"
+                                className="text-sm font-semibold text-black bg-white hover:bg-white/80"
                                 type="button"
                                 onClick={() => navigate('/dashboard')}
                             >
