@@ -28,4 +28,4 @@ Now, I want you to create this feature in the application. I want you to follow 
 5. Grade your feature on a scale of 0 to 100 based off the rubric
 6. If your grade is not 90+, then go back to step 1 and try to refine the feature such that it is correctly implemented.
 
-AT NOT POINT IN TIME will you ever implement the feature unfinished. This is extremely bad and can lead to catastrophic implications.
+AT NO POINT IN TIME will you ever implement the feature unfinished. This is extremely bad and can lead to catastrophic implications. However, do NOT go over 1000 characters.
