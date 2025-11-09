@@ -178,10 +178,7 @@ export default function Dashboard() {
             const data = await res.json();
             console.log("Gemini /generate-feature response:", data);
 
-            const replyText =
-                data?.["feature-map"]
-                    ? "Gemini generated a feature map for your repository."
-                    : "The feature generation endpoint responded, but no feature map was returned.";
+            const replyText = data?.["result"];
 
             const assistantMessage = { role: "assistant" as const, content: replyText };
             setChatMessages((prev) => [...prev, assistantMessage]);
