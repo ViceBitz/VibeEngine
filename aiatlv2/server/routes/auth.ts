@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import { User } from '../models/User.js';
-import { generateToken } from '../middleware/auth.js';
+import { authenticateToken, generateToken } from '../middleware/auth.js';
+import type { AuthRequest } from '../middleware/auth.js';
 
 const router = Router();
 
@@ -82,20 +83,13 @@ router.post('/login', async (req, res) => {
 });
 
 // Get current user
-router.get('/me', async (req, res) => {
+router.get('/me', authenticateToken, async (req: AuthRequest, res) => {
   try {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-
-    if (!token) {
+    if (!req.userId) {
       return res.status(401).json({ error: 'Authentication required' });
     }
 
-    const jwt = require('jsonwebtoken');
-    const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
-    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
-
-    const user = await User.findById(decoded.userId).select('-password');
+    const user = await User.findById(req.userId).select('-password');
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -111,5 +105,8 @@ router.get('/me', async (req, res) => {
   }
 });
 
-export default router;
+router.post('/logout', authenticateToken, (_req: AuthRequest, res) => {
+  res.status(204).send();
+});
 
+export default router;
