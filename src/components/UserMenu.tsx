@@ -11,7 +11,7 @@
 // import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 // import { buttonVariants } from "@/components/ui/button";
 // import { LogOut, ChevronDown } from "lucide-react";
-// import { cn } from "@/lib/utils";
+// import { cn } from "../../lib/utils";
 
 // export default function UserMenu() {
 //     const [email, setEmail] = useState<string>("");
