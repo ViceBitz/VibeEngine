@@ -6,32 +6,21 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Load prompts from files (assumes prompts are in project root)
-export function getPrompt(id: number): string {
-  const promptFiles: { [key: number]: string } = {
-    1: 'featureGeneration.md',
-    2: 'mapGeneration.md',
-    3: 'contextGathering.md',
-    4: 'codeGeneration.md',
-  };
+export function getPrompts(id: number): {markdown: String, json: String} {
+  const fileNameMd = `prompt-${id}.md`;
+  const fileNameJSON = `prompt-${id}.json`;
 
-  const fileName = promptFiles[id] || `prompt-${id}.md`;
+  const promptsdir = join(__dirname, '..', "prompts");
   
-  // Try multiple paths: server root, project root, or relative
-  const possiblePaths = [
-    join(__dirname, '../../../prompts', fileName),
-    join(__dirname, '../../../../prompts', fileName),
-    join(process.cwd(), 'prompts', fileName),
-    join(process.cwd(), '../prompts', fileName),
-  ];
+  const pathMd = join(promptsdir, fileNameMd);
+  const pathJSON = join(promptsdir, fileNameJSON);
 
-  for (const promptPath of possiblePaths) {
-    try {
-      return readFileSync(promptPath, 'utf-8');
-    } catch {
-      continue;
-    }
+  const mdContents = readFileSync(pathMd, 'utf-8');
+  const jsonContents = readFileSync(pathJSON, 'utf-8');
+
+  return {
+    markdown: mdContents,
+    json: JSON.parse(jsonContents)
   }
 
-  throw new Error(`Failed to load prompt: ${fileName}. Please ensure prompts directory exists.`);
 }
-
