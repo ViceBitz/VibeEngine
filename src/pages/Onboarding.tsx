@@ -1,19 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchUserAttributes } from 'aws-amplify/auth';
-import { generateClient } from 'aws-amplify/data';
-import type { Schema } from '../../amplify/data/resource';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Github, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
-
-import { Amplify } from "aws-amplify";
-import outputs from "../../amplify_outputs.json";
-
-Amplify.configure(outputs);
-
-const client = generateClient<Schema>();
 
 /**
  * Onboarding page - requires GitHub OAuth connection before accessing dashboard

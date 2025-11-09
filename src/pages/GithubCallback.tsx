@@ -1,18 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { fetchUserAttributes } from 'aws-amplify/auth';
-import { generateClient } from 'aws-amplify/data';
-import type { Schema } from '../../amplify/data/resource';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
-
-import { Amplify } from "aws-amplify";
-import outputs from "../../amplify_outputs.json";
-
-Amplify.configure(outputs);
-
-const client = generateClient<Schema>();
 
 /**
  * OAuth Callback page for GitHub repository authorization

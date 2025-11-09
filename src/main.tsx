@@ -14,7 +14,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />} />
-        <Route
+        {/* <Route
           path="/onboarding"
           element={
             <RequireAuth>
@@ -38,7 +38,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
             </RequireAuth>
           }
         />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} /> */}
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
