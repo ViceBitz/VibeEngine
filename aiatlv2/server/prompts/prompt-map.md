@@ -32,12 +32,12 @@ For example, let's say we have the following features: authentication, database,
 
 **Payment Processing**
 - Handles billing and transactions
-- Requires Authentication for user identity
-- Stores transaction data in Database
+- Connects to Authentication for user identity
+- Connects to transaction data in Database
 
 **Frontend**
 - Contains UI components and pages
-- Consumes API Layer endpoints
+- Connects to API Layer endpoints
 
 **Logging & Monitoring**
 - Collects logs and metrics from all features
@@ -45,7 +45,7 @@ For example, let's say we have the following features: authentication, database,
 
 **Feature Flags**
 - Dynamically toggles feature availability
-- Integrates with API Layer and Frontend
+- Connects to API Layer and Frontend
 
 You will be provided a single function to output, the adjacency list of features and their neighboring features, similar to this format:
 - feature name -> {names of neighboring features..}
