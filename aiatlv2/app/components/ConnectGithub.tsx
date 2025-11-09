@@ -50,13 +50,13 @@ export default function ConnectGitHub({ onRepoSelected }: { onRepoSelected?: (ow
     const busy = phase === "loading";
 
     return (
-        <Card className="border-muted">
+        <Card className="bg-gray-800/50 border-gray-700">
             <CardHeader className="flex flex-row items-center justify-between space-y-0">
                 <div>
-                    <CardTitle>GitHub Integration</CardTitle>
-                    <CardDescription>Connect and select a repository to analyze.</CardDescription>
+                    <CardTitle className="text-white">GitHub Integration</CardTitle>
+                    <CardDescription className="text-gray-400">Connect and select a repository to analyze.</CardDescription>
                 </div>
-                <Badge variant={connected ? "default" : "secondary"}>
+                <Badge variant={connected ? "default" : "secondary"} className={connected ? "bg-purple-600 text-white" : "bg-gray-700 text-gray-300"}>
                     {connected ? "Ready" : "Not configured"}
                 </Badge>
             </CardHeader>
@@ -64,32 +64,32 @@ export default function ConnectGitHub({ onRepoSelected }: { onRepoSelected?: (ow
             <CardContent className="space-y-5">
                 {repos.length === 0 ? (
                     <>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-sm text-gray-400">
                             {busy
                                 ? "Loading your repositories..."
                                 : "You don't have any repositories, or we couldn't load them."}
                         </p>
-                        {busy && <Skeleton className="h-9 w-full" />}
+                        {busy && <Skeleton className="h-9 w-full bg-gray-700" />}
                     </>
                 ) : (
                     <>
                         <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
                             <div className="grid gap-2">
-                                <Label htmlFor="repo">Repository</Label>
+                                <Label htmlFor="repo" className="text-gray-300">Repository</Label>
                                 {busy ? (
-                                    <Skeleton className="h-9 w-full" />
+                                    <Skeleton className="h-9 w-full bg-gray-700" />
                                 ) : (
                                     <Select value={selectedRepo} onValueChange={setSelectedRepo}>
-                                        <SelectTrigger id="repo" className="w-full">
+                                        <SelectTrigger id="repo" className="w-full bg-gray-900 border-gray-600 text-white">
                                             <SelectValue placeholder="Choose a repository" />
                                         </SelectTrigger>
-                                        <SelectContent>
+                                        <SelectContent className="bg-gray-900 border-gray-700">
                                             {repos.map((r) => (
-                                                <SelectItem key={r.id} value={r.full_name}>
+                                                <SelectItem key={r.id} value={r.full_name} className="text-white focus:bg-gray-800 focus:text-white">
                                                     <div className="flex items-center gap-2">
                                                         <span>{r.full_name}</span>
-                                                        {r.private && <Badge variant="outline" className="text-xs">Private</Badge>}
-                                                        {r.language && <Badge variant="secondary" className="text-xs">{r.language}</Badge>}
+                                                        {r.private && <Badge variant="outline" className="text-xs border-gray-600 text-gray-300">Private</Badge>}
+                                                        {r.language && <Badge variant="secondary" className="text-xs bg-purple-600/20 text-purple-300 border-purple-600/50">{r.language}</Badge>}
                                                     </div>
                                                 </SelectItem>
                                             ))}
@@ -98,19 +98,19 @@ export default function ConnectGitHub({ onRepoSelected }: { onRepoSelected?: (ow
                                 )}
                             </div>
                             <div className="flex items-end gap-2">
-                                <Button variant="outline" size="sm" disabled={busy}>
+                                <Button variant="outline" size="sm" disabled={busy} className="border-purple-600 text-white hover:bg-purple-700 hover:text-white">
                                     <RotateCcw className="mr-2 h-4 w-4" />
                                     Refresh
                                 </Button>
-                                <Button size="sm" disabled={!selectedRepo || busy} className="gap-2">
+                                <Button size="sm" disabled={!selectedRepo || busy} className="gap-2 bg-purple-600 hover:bg-purple-500 text-white">
                                     <Rocket className="h-4 w-4" />
                                     Analyze
                                 </Button>
                             </div>
                         </div>
 
-                        <Separator />
-                        <p className="text-xs text-muted-foreground">
+                        <Separator className="bg-gray-700" />
+                        <p className="text-xs text-gray-400">
                             We'll analyze your repository to create a feature map and set up webhooks to track changes automatically.
                         </p>
                     </>
