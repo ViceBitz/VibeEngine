@@ -13,10 +13,10 @@ I will also provide the source code for the entire repository. I will provide th
 {{ sourceCode }}
 
 # Functions
-## Add File
+## add_file
 - This function will be provided to you in your toolkit, and you are able to use it whenever you want. This function will allow you to create a file inside the repository. You will provide the filename (by its path from root), and the content that you want to type into the file, and it will be created correspondingly.
 
-## Update File
+## update_file
 - This function will be provided to you in your toolkit, and you are able to use it whenever you want. This function will allow you to update a file that already exists. You will provide the filename of the file (by its path from root), and then you will provide the ENTIRE contents of the file that you want to edit. Even if you want to edit just 1 line of code, you will stil need to provide the contents of the entire file you want to edit so that there is no data loss (this is super important).
 
 # Task

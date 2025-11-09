@@ -1,8 +1,6 @@
 import { Router } from 'express';
 import { GoogleGenAI, Type } from '@google/genai';
 import { Octokit } from '@octokit/rest';
-import { User } from '../models/User.js';
-import { authenticateToken } from '../middleware/auth.js';
 import type { AuthRequest } from '../middleware/auth.js';
 import type { Feature } from '../models/Feature.js';
 
@@ -31,86 +29,6 @@ interface UpdateFileArgs {
   message: string;
   branch?: string;
   sha: string;
-}
-
-const githubFunctions = {
-  get_file: async (octokit: Octokit, { owner, repo, file_path, branch = 'main' }: GetFileArgs) => {
-    try {
-      const { data } = await octokit.repos.getContent({
-        owner,
-        repo,
-        path: file_path,
-        ref: branch,
-      });
-      const content = Buffer.from((data as any).content, 'base64').toString('utf-8');
-      return {
-        content,
-        sha: (data as any).sha,
-        path: file_path,
-      };
-    } catch (error: any) {
-      return {
-        error: `Failed to get file: ${error.message}`,
-        content: null,
-        sha: null,
-        path: file_path,
-      };
-    }
-  },
-  update_file: async (octokit: Octokit, { owner, repo, path, content, message, branch = 'main', sha }: UpdateFileArgs) => {
-    try {
-      const result = await octokit.repos.createOrUpdateFileContents({
-        owner,
-        repo,
-        path,
-        message,
-        content: Buffer.from(content).toString('base64'),
-        branch,
-        sha,
-      });
-      return {
-        success: true,
-        commit: result.data.commit.html_url,
-        sha: result.data.content?.sha,
-      };
-    } catch (error: any) {
-      return {
-        success: false,
-        error: `Failed to update file: ${error.message}`,
-      };
-    }
-  },
-};
-
-async function executeFunctionCall(call: any, octokit: Octokit | null): Promise<any> {
-  console.log(`Executing function: ${call.name}`, call.args);
-
-  try {
-    if (call.name === 'get_file') {
-      if (!octokit) {
-        return { error: 'GitHub token required for get_file' };
-      }
-      return await githubFunctions.get_file(octokit, call.args);
-    } else if (call.name === 'update_file') {
-      if (!octokit) {
-        return { error: 'GitHub token required for update_file' };
-      }
-      return await githubFunctions.update_file(octokit, call.args);
-    } else if (call.name === 'add_feature') {
-      return {
-        action: 'add',
-        feature: call.args,
-      };
-    } else if (call.name === 'update_feature') {
-      return {
-        action: 'update',
-        feature: call.args,
-      };
-    }
-    return { error: `Unknown function: ${call.name}` };
-  } catch (error: any) {
-    return { error: error.message };
-  }
 }
 
 // Gemini API endpoint for creating feature map
@@ -196,4 +114,3 @@ async function makeFeatureMap(features: typeof Feature[]) : Promise<any> {
 }
 
 export default router;
-
