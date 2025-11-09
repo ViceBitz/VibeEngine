@@ -91,7 +91,7 @@ export default function Dashboard() {
         } finally {
             setLoading(false);
         }
-    }, [apiUrl]);
+    }, []);
 
     useEffect(() => {
         void loadFeatureMap();

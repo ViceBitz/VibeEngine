@@ -19,7 +19,7 @@ router.get('/api/auth/github/start', (_req, res) => {
   const params = new URLSearchParams({
     client_id: clientId,
     redirect_uri: redirectUri,
-    scope: 'read:user user:email admin:repo_hook public_repo repo write:repo_hook',
+    scope: 'read:user user:email repo admin:repo_hook',
     allow_signup: 'true',
   });
 
@@ -175,7 +175,22 @@ router.get('/api/feature-map', authenticateToken, async (req: AuthRequest, res) 
       return res.status(500).json({ error: 'Invalid feature map format in database' });
     }
 
-    return res.json({ featureMap: parsed });
+    // Convert object format to array format for frontend
+    let featureArray = [];
+    if (typeof parsed === 'object' && !Array.isArray(parsed)) {
+      // Transform Record<string, FeatureEntry> to Feature[]
+      featureArray = Object.values(parsed).map((entry: any) => ({
+        featureName: entry.name || '',
+        userSummary: entry.user_description || '',
+        aiSummary: entry.technical_description || '',
+        filenames: entry.file_references || [],
+        neighbors: entry.neighbors || [],
+      }));
+    } else if (Array.isArray(parsed)) {
+      featureArray = parsed;
+    }
+
+    return res.json({ featureMap: featureArray });
   } catch (err: any) {
     console.error('Error in /api/feature-map:', err);
     return res
