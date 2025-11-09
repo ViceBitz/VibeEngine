@@ -34,39 +34,51 @@ export default function FeatureMapVisualization({ features }: { features: Featur
   useEffect(() => {
     if (!features || features.length === 0) return;
 
-    // Calculate layout positions (simple grid layout)
-    const columns = Math.ceil(Math.sqrt(features.length));
-    const xSpacing = 300;
-    const ySpacing = 250;
+    // Calculate layout positions using force-directed layout simulation
+    const centerX = 400;
+    const centerY = 300;
+    const radius = 180;
+    const angleStep = (2 * Math.PI) / features.length;
 
-    const newNodes: Node[] = features.map((feature, idx) => ({
-      id: feature.featureId,
-      type: 'default',
-      data: {
-        label: (
-          <div className="px-4 py-2">
-            <div className="font-semibold text-sm">{feature.featureName}</div>
-            <div className="text-xs text-muted-foreground mt-1">
-              {feature.filenames?.length || 0} files
+    const newNodes: Node[] = features.map((feature, idx) => {
+      // Position nodes in a circle for better visibility of connections
+      const angle = idx * angleStep;
+      const x = centerX + radius * Math.cos(angle);
+      const y = centerY + radius * Math.sin(angle);
+
+      return {
+        id: feature.featureId,
+        type: 'default',
+        data: {
+          label: (
+            <div className="px-4 py-3 text-center">
+              <div className="font-bold text-sm text-white mb-1">{feature.featureName}</div>
+              <div className="text-xs text-purple-300 font-medium">
+                {feature.filenames?.length || 0} files
+              </div>
             </div>
-          </div>
-        ),
-      },
-      position: {
-        x: (idx % columns) * xSpacing,
-        y: Math.floor(idx / columns) * ySpacing,
-      },
-      style: {
-        background: 'hsl(var(--card))',
-        border: '1px solid hsl(var(--border))',
-        borderRadius: '8px',
-        fontSize: '12px',
-        color: 'hsl(var(--foreground))',
-        width: 200,
-      },
-    }));
+          ),
+        },
+        position: { x, y },
+        style: {
+          background: 'linear-gradient(135deg, rgba(126, 58, 242, 0.4) 0%, rgba(168, 85, 247, 0.3) 100%)',
+          border: '2px solid rgba(168, 85, 247, 0.8)',
+          borderRadius: '12px',
+          fontSize: '12px',
+          color: '#ffffff',
+          width: 180,
+          height: 120,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          boxShadow: '0 8px 32px rgba(168, 85, 247, 0.4), 0 0 80px rgba(168, 85, 247, 0.2)',
+          transition: 'all 0.3s ease',
+          backdropFilter: 'blur(10px)',
+        },
+      };
+    });
 
-    // Create edges from neighbors
+    // Create edges from neighbors with enhanced styling
     const newEdges: Edge[] = features.flatMap((feature) =>
       (feature.neighbors || []).map((neighborId) => ({
         id: `${feature.featureId}-${neighborId}`,
@@ -74,7 +86,14 @@ export default function FeatureMapVisualization({ features }: { features: Featur
         target: neighborId,
         type: 'smoothstep',
         animated: true,
-        style: { stroke: 'hsl(var(--primary))' },
+        style: {
+          stroke: 'rgba(168, 85, 247, 0.6)',
+          strokeWidth: 3,
+        },
+        markerEnd: {
+          type: 'arrowclosed',
+          color: 'rgba(168, 85, 247, 0.6)',
+        },
       }))
     );
 
@@ -96,10 +115,10 @@ export default function FeatureMapVisualization({ features }: { features: Featur
 
   if (!features || features.length === 0) {
     return (
-      <Card>
+      <Card className="bg-gray-800/50 border-gray-700">
         <CardHeader>
-          <CardTitle>Feature Map</CardTitle>
-          <CardDescription>No features found. Connect a repository to generate the feature map.</CardDescription>
+          <CardTitle className="text-white">Feature Map</CardTitle>
+          <CardDescription className="text-gray-400">No features found. Connect a repository to generate the feature map.</CardDescription>
         </CardHeader>
       </Card>
     );
@@ -107,55 +126,61 @@ export default function FeatureMapVisualization({ features }: { features: Featur
 
   return (
     <>
-      <Card className="h-[600px]">
+      <Card className="h-[600px] bg-gray-800/50 border-gray-700">
         <CardHeader>
-          <CardTitle>Feature Map</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-white">Feature Map</CardTitle>
+          <CardDescription className="text-gray-400">
             Visual representation of your repository's features. Click on a feature to see details.
           </CardDescription>
         </CardHeader>
         <CardContent className="h-full pb-4">
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
-            onNodeClick={onNodeClick}
-            fitView
-            attributionPosition="bottom-left"
-          >
-            <Background variant={BackgroundVariant.Dots} gap={16} size={1} />
-            <Controls />
-            <MiniMap />
-          </ReactFlow>
+          <div className="h-[450px] rounded-lg overflow-hidden" style={{ background: '#1e293b' }}>
+            <ReactFlow
+              nodes={nodes}
+              edges={edges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onConnect={onConnect}
+              onNodeClick={onNodeClick}
+              fitView
+              attributionPosition="bottom-left"
+            >
+              <Background variant={BackgroundVariant.Dots} gap={16} size={1} color="#475569" />
+              <Controls className="bg-gray-800 border-purple-700 text-white [&_button]:bg-gray-800 [&_button]:border-purple-700 [&_button]:text-white [&_button:hover]:bg-purple-700" />
+              <MiniMap
+                nodeColor={() => '#a855f7'}
+                maskColor="rgba(30, 41, 59, 0.8)"
+                className="bg-gray-900 border border-purple-700"
+              />
+            </ReactFlow>
+          </div>
         </CardContent>
       </Card>
 
       {/* Feature Details Dialog */}
       <Dialog open={!!selectedFeature} onOpenChange={() => setSelectedFeature(null)}>
-        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto bg-gray-900 border-gray-700 text-white">
           <DialogHeader>
-            <DialogTitle>{selectedFeature?.featureName}</DialogTitle>
-            <DialogDescription>Feature details and associated files</DialogDescription>
+            <DialogTitle className="text-white">{selectedFeature?.featureName}</DialogTitle>
+            <DialogDescription className="text-gray-400">Feature details and associated files</DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
             <div>
-              <h4 className="font-semibold text-sm mb-2">What it does (Non-technical)</h4>
-              <p className="text-sm text-muted-foreground">{selectedFeature?.userSummary}</p>
+              <h4 className="font-semibold text-sm mb-2 text-purple-400">What it does (Non-technical)</h4>
+              <p className="text-sm text-gray-300">{selectedFeature?.userSummary}</p>
             </div>
 
             <div>
-              <h4 className="font-semibold text-sm mb-2">How it works (Technical)</h4>
-              <p className="text-sm text-muted-foreground">{selectedFeature?.aiSummary}</p>
+              <h4 className="font-semibold text-sm mb-2 text-purple-400">How it works (Technical)</h4>
+              <p className="text-sm text-gray-300">{selectedFeature?.aiSummary}</p>
             </div>
 
             <div>
-              <h4 className="font-semibold text-sm mb-2">Associated Files</h4>
+              <h4 className="font-semibold text-sm mb-2 text-purple-400">Associated Files</h4>
               <div className="flex flex-wrap gap-2">
                 {selectedFeature?.filenames?.map((file, idx) => (
-                  <Badge key={idx} variant="secondary" className="font-mono text-xs">
+                  <Badge key={idx} variant="secondary" className="font-mono text-xs bg-gray-800 text-purple-300 border-purple-700">
                     {file}
                   </Badge>
                 ))}
@@ -164,12 +189,12 @@ export default function FeatureMapVisualization({ features }: { features: Featur
 
             {selectedFeature?.neighbors && selectedFeature.neighbors.length > 0 && (
               <div>
-                <h4 className="font-semibold text-sm mb-2">Connected Features</h4>
+                <h4 className="font-semibold text-sm mb-2 text-purple-400">Connected Features</h4>
                 <div className="flex flex-wrap gap-2">
                   {selectedFeature.neighbors.map((neighborId) => {
                     const neighbor = features.find((f) => f.featureId === neighborId);
                     return neighbor ? (
-                      <Badge key={neighborId} variant="outline">
+                      <Badge key={neighborId} variant="outline" className="border-purple-600 text-purple-300">
                         {neighbor.featureName}
                       </Badge>
                     ) : null;

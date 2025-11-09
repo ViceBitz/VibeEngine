@@ -3,7 +3,7 @@ import { Button } from "~/components/ui/button";
 
 // Static navigation data
 const navigation = [
-    { name: 'Product', href: '#' },
+    { name: 'Services', href: '#' },
     { name: 'Features', href: '#' },
     { name: 'Marketplace', href: '#' },
     { name: 'Company', href: '#' },

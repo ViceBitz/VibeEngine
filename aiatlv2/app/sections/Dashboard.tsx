@@ -7,39 +7,54 @@ import { Skeleton } from "~/components/ui/skeleton";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 
-// STATIC DATA - Hardcoded features since we're not using backend
-const STATIC_FEATURES = [
+const FEATURES_LIST = [
     {
         featureId: "feature-1",
         featureName: "User Authentication",
         userSummary: "Allows users to sign up, log in, and manage their accounts securely.",
-        aiSummary: "Implements JWT-based authentication with refresh tokens, password hashing using bcrypt, and session management.",
-        filenames: ["src/auth/login.ts", "src/auth/signup.ts", "src/middleware/auth.ts"],
-        neighbors: ["feature-2", "feature-3"]
+        aiSummary: "Implements JWT-based authentication with refresh tokens, password hashing using bcrypt, and session management with middleware protection.",
+        filenames: ["src/auth/login.ts", "src/auth/signup.ts", "src/middleware/auth.ts", "src/utils/jwt.ts"],
+        neighbors: ["feature-2", "feature-3", "feature-5"]
     },
     {
         featureId: "feature-2",
         featureName: "User Profile",
         userSummary: "Users can view and edit their profile information including avatar and bio.",
-        aiSummary: "RESTful API endpoints for CRUD operations on user profiles, with image upload support via S3.",
-        filenames: ["src/profile/profile.controller.ts", "src/profile/profile.service.ts"],
-        neighbors: ["feature-1"]
+        aiSummary: "RESTful API endpoints for CRUD operations on user profiles, with image upload support via S3 and profile validation.",
+        filenames: ["src/profile/profile.controller.ts", "src/profile/profile.service.ts", "src/profile/upload.ts"],
+        neighbors: ["feature-1", "feature-4", "feature-6"]
     },
     {
         featureId: "feature-3",
         featureName: "Dashboard Analytics",
         userSummary: "Displays key metrics and statistics about user activity and engagement.",
-        aiSummary: "Aggregates data from multiple sources using Redis caching, renders charts with recharts library.",
-        filenames: ["src/analytics/dashboard.tsx", "src/analytics/metrics.service.ts"],
-        neighbors: ["feature-1", "feature-4"]
+        aiSummary: "Aggregates data from multiple sources using Redis caching, renders interactive charts with recharts library and real-time data updates.",
+        filenames: ["src/analytics/dashboard.tsx", "src/analytics/metrics.service.ts", "src/analytics/charts.tsx"],
+        neighbors: ["feature-1", "feature-4", "feature-5"]
     },
     {
         featureId: "feature-4",
         featureName: "Notifications",
         userSummary: "Sends real-time notifications to users about important events.",
-        aiSummary: "WebSocket-based notification system with fallback to polling, stores notifications in PostgreSQL.",
-        filenames: ["src/notifications/notification.service.ts", "src/notifications/websocket.ts"],
-        neighbors: ["feature-3"]
+        aiSummary: "WebSocket-based notification system with fallback to polling, stores notifications in PostgreSQL with read/unread tracking.",
+        filenames: ["src/notifications/notification.service.ts", "src/notifications/websocket.ts", "src/notifications/model.ts"],
+        neighbors: ["feature-2", "feature-3", "feature-6"]
+    },
+    {
+        featureId: "feature-5",
+        featureName: "API Gateway",
+        userSummary: "Central entry point for all API requests with routing and load balancing.",
+        aiSummary: "Express-based API gateway with rate limiting, request validation, CORS handling, and routing to microservices.",
+        filenames: ["src/gateway/server.ts", "src/gateway/routes.ts", "src/middleware/rate-limit.ts"],
+        neighbors: ["feature-1", "feature-3", "feature-6"]
+    },
+    {
+        featureId: "feature-6",
+        featureName: "Database Layer",
+        userSummary: "Manages all database connections and queries for the application.",
+        aiSummary: "PostgreSQL connection pooling with Prisma ORM, includes migrations, seeders, and query optimization with indexing.",
+        filenames: ["src/db/client.ts", "src/db/migrations/", "prisma/schema.prisma"],
+        neighbors: ["feature-2", "feature-4", "feature-5"]
     }
 ];
 
@@ -53,7 +68,7 @@ type Feature = {
 };
 
 export default function Dashboard() {
-    const [features] = useState<Feature[]>(STATIC_FEATURES); // Using static data
+    const [features] = useState<Feature[]>(FEATURES_LIST); // Using static data
     const [selectedRepo, setSelectedRepo] = useState<{ owner: string; repo: string; repoId?: string } | null>({
         owner: "example",
         repo: "react-app"
@@ -65,11 +80,11 @@ export default function Dashboard() {
             <header className="sticky top-0 z-20 border-b border-gray-800 bg-gray-900/80 backdrop-blur">
                 <div className="mx-auto max-w-7xl px-5 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="h-9 w-9 rounded-lg bg-indigo-600 grid place-items-center text-white font-bold">
+                        <div className="h-9 w-9 rounded-lg bg-purple-600 grid place-items-center text-white font-bold">
                             V
                         </div>
                         <h1 className="text-lg font-semibold tracking-tight text-white">VibeCode Analyzer</h1>
-                        <span className="ml-3 hidden sm:inline text-xs rounded-full border border-gray-700 px-2 py-0.5 text-gray-400">
+                        <span className="ml-3 hidden sm:inline text-xs rounded-full border border-purple-700 px-2 py-0.5 text-purple-400">
                             Dashboard
                         </span>
                     </div>
@@ -145,11 +160,11 @@ export default function Dashboard() {
                         <Input
                             type="text"
                             placeholder="Chat with Gemini..."
-                            className="flex-1 bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 focus-visible:ring-indigo-500 focus-visible:border-indigo-500"
+                            className="flex-1 bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 focus-visible:ring-purple-500 focus-visible:border-purple-500"
                         />
                         <Button
                             type="submit"
-                            className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-6"
+                            className="bg-purple-600 hover:bg-purple-500 text-white font-semibold px-6"
                         >
                             Send
                         </Button>
