@@ -2,7 +2,9 @@
 
 import type { FormEvent } from 'react';
 import { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
+
 import { Button } from '~/components/ui/button';
 import {
     Dialog,
@@ -37,9 +39,7 @@ const USER_STORAGE_KEY = 'vibecode:auth_user';
 
 const API_BASE_URL = (() => {
     const configured = import.meta.env.VITE_API_URL?.replace(/\/$/, '') ?? '';
-    if (configured) {
-        return configured;
-    }
+    if (configured) return configured;
     return import.meta.env.DEV ? 'http://localhost:3001' : '';
 })();
 
@@ -48,9 +48,7 @@ const apiUrl = (path: string) => `${API_BASE_URL}${path}`;
 async function loginRequest(email: string, password: string): Promise<AuthResponse> {
     const response = await fetch(apiUrl('/api/auth/login'), {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
     });
 
@@ -66,9 +64,7 @@ async function loginRequest(email: string, password: string): Promise<AuthRespon
 async function registerRequest(email: string, password: string): Promise<AuthResponse> {
     const response = await fetch(apiUrl('/api/auth/register'), {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
     });
 
@@ -103,7 +99,7 @@ async function logoutRequest(token: string) {
             Authorization: `Bearer ${token}`,
         },
     }).catch(() => {
-        // Ignore network errors on logout - client state is the source of truth.
+        // ignore network errors on logout
     });
 }
 
@@ -113,11 +109,10 @@ const clearStoredAuth = () => {
     window.localStorage.removeItem(USER_STORAGE_KEY);
 };
 
-export default function Navbar({
-    navigation,
-}: {
-    navigation: NavItem[];
-}) {
+export default function Navbar({ navigation }: { navigation: NavItem[] }) {
+    const navigate = useNavigate();
+    const location = useLocation();
+
     const [checking, setChecking] = useState(true);
     const [user, setUser] = useState<AuthUser | null>(null);
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -128,9 +123,12 @@ export default function Navbar({
     const [formBusy, setFormBusy] = useState(false);
 
     const canSubmit = email.trim().length > 0 && password.length > 0;
+    const onHomePage = location.pathname === '/';
 
+    // Load user from localStorage / /me
     useEffect(() => {
         if (typeof window === 'undefined') return;
+
         const token = window.localStorage.getItem(TOKEN_STORAGE_KEY);
         const cachedUser = window.localStorage.getItem(USER_STORAGE_KEY);
 
@@ -201,6 +199,9 @@ export default function Navbar({
             setUser(result.user);
             resetFormState();
             setDialogOpen(false);
+
+            // Redirect to dashboard after successful auth
+            navigate('/dashboard');
         } catch (error) {
             setFormError(
                 error instanceof Error
@@ -230,7 +231,7 @@ export default function Navbar({
         <header className="absolute inset-x-0 top-0 z-50">
             <nav aria-label="Global" className="flex items-center justify-between p-6 lg:px-8">
                 <div className="flex lg:flex-1">
-                    <a href="#" className="-m-1.5 p-1.5">
+                    <a href="/" className="-m-1.5 p-1.5">
                         <span className="text-2xl font-bold text-indigo-500">VibeCode</span>
                     </a>
                 </div>
@@ -247,18 +248,32 @@ export default function Navbar({
                     {checking ? (
                         <span className="text-sm/6 font-semibold text-white/70">…</span>
                     ) : user ? (
-                        <div className="flex items-center gap-4">
-                            <span className="text-sm font-semibold text-white">{user.email}</span>
+                        onHomePage ? (
+                            // Logged in AND on home page → only show Dashboard button
                             <Button
                                 variant="ghost"
                                 className="text-sm font-semibold text-white hover:bg-white/10 hover:text-white"
-                                onClick={handleLogout}
                                 type="button"
+                                onClick={() => navigate('/dashboard')}
                             >
-                                Sign Out
+                                Dashboard
                             </Button>
-                        </div>
+                        ) : (
+                            // Logged in on other pages → show email + Sign Out
+                            <div className="flex items-center gap-4">
+                                <span className="text-sm font-semibold text-white">{user.email}</span>
+                                <Button
+                                    variant="ghost"
+                                    className="text-sm font-semibold text-white hover:bg-white/10 hover:text-white"
+                                    onClick={handleLogout}
+                                    type="button"
+                                >
+                                    Sign Out
+                                </Button>
+                            </div>
+                        )
                     ) : (
+                        // Not logged in → Sign In / Create Account dialog
                         <Dialog
                             open={dialogOpen}
                             onOpenChange={(open) => {
@@ -277,9 +292,7 @@ export default function Navbar({
                                     Sign In
                                 </Button>
                             </DialogTrigger>
-                            <DialogContent
-                                className="bg-gray-900 text-white border border-gray-700/70 shadow-2xl sm:max-w-[420px] outline-none focus-visible:outline-none"
-                            >
+                            <DialogContent className="bg-gray-900 text-white border border-gray-700/70 shadow-2xl sm:max-w-[420px] outline-none focus-visible:outline-none">
                                 <DialogHeader>
                                     <DialogTitle>
                                         {authMode === 'login' ? 'Sign in to VibeCode' : 'Create your VibeCode account'}
@@ -320,10 +333,8 @@ export default function Navbar({
                                                 : 'Keep your credentials secure.'}
                                         </p>
                                     </div>
-                                    {formError && (
-                                        <p className="text-sm text-red-400">{formError}</p>
-                                    )}
-                                    <DialogFooter className="flex flex-col gap-3 sm:flex-col">
+                                    {formError && <p className="text-sm text-red-400">{formError}</p>}
+                                    <DialogFooter className="flex flex-col gap-3">
                                         <Button type="submit" className="w-full" disabled={formBusy || !canSubmit}>
                                             {formBusy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                             {authMode === 'login' ? 'Sign In' : 'Create Account'}
