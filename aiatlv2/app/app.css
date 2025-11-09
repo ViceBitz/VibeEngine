@@ -9,8 +9,14 @@
 }
 
 html,
+body,
+#root {
+  height: 100%;
+  background: black;
+}
+
 body {
-  @apply bg-white dark:bg-gray-950;
+  @apply antialiased overscroll-y-none overflow-x-hidden;
 
   @media (prefers-color-scheme: dark) {
     color-scheme: dark;
