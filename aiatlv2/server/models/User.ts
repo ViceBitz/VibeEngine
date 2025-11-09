@@ -2,15 +2,28 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IUser extends Document {
   _id: string;
+  email: string;
   githubUsername?: string;
-  githubToken?: string;
+  githubId?: string;
+  githubToken?: string
   createdAt: Date;
   updatedAt: Date;
 }
 
 const UserSchema = new Schema<IUser>(
   {
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
     githubUsername: {
+      type: String,
+      default: null,
+    },
+    githubId: {
       type: String,
       default: null,
     },

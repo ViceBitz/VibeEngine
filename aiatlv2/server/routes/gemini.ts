@@ -118,8 +118,6 @@ async function makeFeatureMap(features: string) : Promise<any> {
   }
 }
 
-
-// Gemini API endpoint for creating feature map
 router.post("/generate-feature", async (req: AuthRequest, res) => {
   try {
     const githubUser = req.body.githubUser;

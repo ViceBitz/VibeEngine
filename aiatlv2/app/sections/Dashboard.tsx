@@ -193,6 +193,18 @@ export default function Dashboard() {
         const trimmed = chatInput.trim();
         if (!trimmed) return;
 
+        // Need a repo to run feature generation
+        if (!selectedRepo) {
+            setChatMessages((prev) => [
+                ...prev,
+                {
+                    role: "assistant",
+                    content: "Please select a GitHub repository before requesting a feature.",
+                },
+            ]);
+            return;
+        }
+
         setIsChatOpen(true);
 
         const userMessage = { role: "user" as const, content: trimmed };
@@ -200,19 +212,27 @@ export default function Dashboard() {
         setChatInput("");
 
         try {
-            const res = await fetch(apiUrl("/api/gemini/dummy"), {
+            const payload = {
+                githubUser: selectedRepo.owner,
+                repoName: selectedRepo.repo,
+                requestedFeature: trimmed,
+            };
+
+            const res = await fetch(apiUrl("/api/gemini/generate-feature"), {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ prompt: trimmed }),
+                body: JSON.stringify(payload),
             });
 
             const data = await res.json();
-            console.log("Gemini response data:", data);
+            console.log("Gemini /generate-feature response:", data);
+
             const replyText =
-                data?.reply ??
-                "Dummy Gemini: I got your message, but the backend did not return a 'reply' field.";
+                data?.["feature-map"]
+                    ? "Gemini generated a feature map for your repository."
+                    : "The feature generation endpoint responded, but no feature map was returned.";
 
             const assistantMessage = { role: "assistant" as const, content: replyText };
             setChatMessages((prev) => [...prev, assistantMessage]);
@@ -222,7 +242,7 @@ export default function Dashboard() {
                 ...prev,
                 {
                     role: "assistant",
-                    content: "Oops, something went wrong talking to the dummy Gemini endpoint.",
+                    content: "Oops, something went wrong talking to the feature generation endpoint.",
                 },
             ]);
         }
@@ -261,7 +281,11 @@ export default function Dashboard() {
                     </Card>
 
                     <div className="lg:col-span-2">
-                        <ConnectGitHub />
+                        <ConnectGitHub
+                            onRepoSelected={(owner, repo) => {
+                                setSelectedRepo({ owner, repo });
+                            }}
+                        />
                     </div>
                 </section>
 
