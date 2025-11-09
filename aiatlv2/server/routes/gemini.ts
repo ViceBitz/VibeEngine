@@ -183,34 +183,78 @@ router.post("/generate-feature", async (req: AuthRequest, res) => {
   }
 });
 
-router.post("/dummy", async (req: AuthRequest, res) => {
+
+// Gemini API endpoint for creating generate feature
+router.post("/generate-feature", async (req: AuthRequest, res) => {
   try {
-    const { prompt } = req.body ?? {};
+    const githubUser = req.body.githubUser;
+    const repoName = req.body.repoName;
+    const requestedFeature = req.body.requestedFeature;
+    if (!githubUser || !repoName) {
+      throw new Error("Missing required field: repoName");
+    }
 
-// Generate feature map from disconnected features with Gemini
-async function makeFeatureMap(features: typeof Feature[]) : Promise<any> {
-  const { markdown, json } = await getPrompts("feature");
+    //Fetch entire GitHub repository
+    const repo: String = await fetchAllFilesFromRepo(githubUser, repoName);
+    
+    //Get feature generation markdown and functions, inputted with repository code
+    const { markdown, json } = await getPrompts("edit");
+    const featurePrompt = renderTemplate(markdown, {
+      "requestedFeature" : requestedFeature,
+      "featureFormat" : repo,
+      "featureMap" : repo, // Need to implement
+      "sourceCode" : repo,
+    })
 
-  // Generate content using Gemini
-  const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
-    contents: mapPrompt,
-    config: {
-      tools: [{
-        //@ts-ignore
-        functionDeclarations: json
-      }],
-    },    
-  });
-
-  // The response object may vary depending on Gemini client version
-  // Typically output text is in response.output_text
-  if (response.functionCalls && response.functionCalls.length > 0) {
-    const functionCall = response.functionCalls[0]; // Assuming one function call
-    return functionCall
-  } else {
-    console.log(response.text)
-    return null;
+    // Generate feature groups using Gemini
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: featurePrompt,
+      config: {
+        tools: [{
+          //@ts-ignore
+          functionDeclarations: json
+        }],
+      },    
+    });
+    
+    if (response.functionCalls && response.functionCalls.length > 0) {
+      response.functionCalls.forEach((func) => {
+        const funcName = func.name;
+        const funcArgs = func.args;
+        // Add file to github repository
+        if (funcName === "update_file") {
+          writeFileToRepo(
+            githubUser,
+            repoName,
+            funcArgs?.filename,
+            funcArgs?.content,
+            "VibeEngine updated a file in the repository.",
+            "main",
+            token
+          )
+        } else if (funcName == "add_file") {
+          writeFileToRepo(
+            githubUser,
+            repoName,
+            funcArgs?.filename,
+            funcArgs?.content,
+            "VibeEngine added a file to the repository.",
+            "main",
+            token
+          )  
+        }
+      });
+      // Debug
+      const functionCall = response.functionCalls[0]; // Assuming one function call
+      res.json({ functionName: functionCall.name, result: functionCall.args })
+    } else {
+      console.log(response.text)
+      res.json(null)
+    }
+  } catch (error) {
+    console.error("Gemini generation error:", error);
+    res.status(500).json({ error: "Failed to generate content" });
   }
 });
 
