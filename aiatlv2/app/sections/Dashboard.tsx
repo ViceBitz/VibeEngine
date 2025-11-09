@@ -4,6 +4,8 @@ import FeatureMapVisualization from "~/components/FeatureMapVisualization";
 import ChatInterface from "~/components/ChatInterface";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "~/components/ui/card";
 import { Skeleton } from "~/components/ui/skeleton";
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
 
 // STATIC DATA - Hardcoded features since we're not using backend
 const STATIC_FEATURES = [
@@ -59,15 +61,15 @@ export default function Dashboard() {
     const [loading] = useState(false);
 
     return (
-        <div className="min-h-screen bg-background text-foreground">
-            <header className="sticky top-0 z-20 border-b bg-background/80 backdrop-blur">
+        <div className="min-h-screen bg-gray-900 text-white pb-24">
+            <header className="sticky top-0 z-20 border-b border-gray-800 bg-gray-900/80 backdrop-blur">
                 <div className="mx-auto max-w-7xl px-5 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="h-9 w-9 rounded-lg bg-primary grid place-items-center text-primary-foreground font-bold">
+                        <div className="h-9 w-9 rounded-lg bg-indigo-600 grid place-items-center text-white font-bold">
                             V
                         </div>
-                        <h1 className="text-lg font-semibold tracking-tight">VibeCode Analyzer</h1>
-                        <span className="ml-3 hidden sm:inline text-xs rounded-full border px-2 py-0.5 text-muted-foreground">
+                        <h1 className="text-lg font-semibold tracking-tight text-white">VibeCode Analyzer</h1>
+                        <span className="ml-3 hidden sm:inline text-xs rounded-full border border-gray-700 px-2 py-0.5 text-gray-400">
                             Dashboard
                         </span>
                     </div>
@@ -76,14 +78,14 @@ export default function Dashboard() {
 
             <main className="mx-auto max-w-7xl px-5 py-8 space-y-6">
                 <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <Card className="lg:col-span-1">
+                    <Card className="lg:col-span-1 bg-gray-800/50 border-gray-700 text-white">
                         <CardHeader>
-                            <CardTitle>Welcome</CardTitle>
-                            <CardDescription>
+                            <CardTitle className="text-white">Welcome</CardTitle>
+                            <CardDescription className="text-gray-400">
                                 Select a repository to analyze its features and make AI-powered modifications.
                             </CardDescription>
                         </CardHeader>
-                        <CardContent className="text-sm text-muted-foreground space-y-1">
+                        <CardContent className="text-sm text-gray-400 space-y-1">
                             <p>• Interactive feature map visualization</p>
                             <p>• AI-powered code analysis</p>
                             <p>• Natural language code modifications</p>
@@ -100,15 +102,15 @@ export default function Dashboard() {
                     <>
                         <section>
                             {loading && features.length === 0 ? (
-                                <Card className="h-[600px]">
+                                <Card className="h-[600px] bg-gray-800/50 border-gray-700">
                                     <CardHeader>
-                                        <CardTitle>Feature Map</CardTitle>
-                                        <CardDescription>Loading feature map...</CardDescription>
+                                        <CardTitle className="text-white">Feature Map</CardTitle>
+                                        <CardDescription className="text-gray-400">Loading feature map...</CardDescription>
                                     </CardHeader>
                                     <CardContent className="space-y-4">
-                                        <Skeleton className="h-12 w-full" />
-                                        <Skeleton className="h-12 w-full" />
-                                        <Skeleton className="h-12 w-full" />
+                                        <Skeleton className="h-12 w-full bg-gray-700" />
+                                        <Skeleton className="h-12 w-full bg-gray-700" />
+                                        <Skeleton className="h-12 w-full bg-gray-700" />
                                     </CardContent>
                                 </Card>
                             ) : (
@@ -119,16 +121,41 @@ export default function Dashboard() {
                 )}
 
                 {!selectedRepo && (
-                    <Card>
+                    <Card className="bg-gray-800/50 border-gray-700">
                         <CardHeader>
-                            <CardTitle>Get Started</CardTitle>
-                            <CardDescription>
+                            <CardTitle className="text-white">Get Started</CardTitle>
+                            <CardDescription className="text-gray-400">
                                 Select a repository above to view its feature map and start making AI-powered modifications.
                             </CardDescription>
                         </CardHeader>
                     </Card>
                 )}
             </main>
+
+            {/* Fixed Chat Interface at Bottom */}
+            <div className="fixed bottom-0 left-0 right-0 z-30 bg-gray-900/95 backdrop-blur border-t border-gray-800">
+                <div className="mx-auto max-w-7xl px-5 py-4">
+                    <form
+                        className="flex items-center gap-3"
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            // No implementation - just prevent default
+                        }}
+                    >
+                        <Input
+                            type="text"
+                            placeholder="Chat with Gemini..."
+                            className="flex-1 bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 focus-visible:ring-indigo-500 focus-visible:border-indigo-500"
+                        />
+                        <Button
+                            type="submit"
+                            className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-6"
+                        >
+                            Send
+                        </Button>
+                    </form>
+                </div>
+            </div>
         </div>
     );
 }
