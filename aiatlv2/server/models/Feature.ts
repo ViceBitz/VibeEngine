@@ -14,12 +14,6 @@ export interface IFeature extends Document {
 
 const FeatureSchema = new Schema<IFeature>(
   {
-    projectId: {
-      type: Schema.Types.ObjectId,
-      ref: 'Project',
-      required: true,
-      index: true,
-    },
     featureName: {
       type: String,
       required: true,
