@@ -2,6 +2,8 @@
 
 Vibe coding is fast, but brutal to maintain. Spinning up an app and shipping it takes less than a day, then three months later the code base is unreadable and adding even the simplest feature takes weeks. VibeEngine was created to decipher the indecipherable code. VibeEngine makes complex enterprise infrastructure as understandable and flexible as personal projects.
 
+**DevPost:** https://devpost.com/software/vibeengine
+
 ## What it does
 
 VibeEngine understands your codebase more intuitively than anyone or anything ever before. VibeEngine connects to your GitHub and allows you to connect your repositories in a few simple clicks. It generates  descriptions for all your core features and processes, helping you, and anyone on your team manage your codebase. VibeEngine builds out an extensive feature map, showing the connections between key features and systems in your repository. This visualization enables developers to understand and manage their codebase. Beyond just summarizing your existing codebase, VibeEngine’s intuitive understanding of the code base allows it to add new features seamlessly to your project. If the user wants to add a new feature, they simply prompt VibeEngine, and it develops and pushes the update to the GitHub repository automatically. VibeEngine then updates the feature map, allowing the user to immediately see the effects the new feature has on their structure. 
